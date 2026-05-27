@@ -1,0 +1,342 @@
+
+<h2 class="sr-only">Match3D player stats dashboard showing leaderboard, score trends, and recent performance for 48 players.</h2>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.wrap{padding:1.5rem 0}
+.top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:1.5rem}
+.title{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.subtitle{font-size:13px;color:var(--color-text-secondary);margin-top:2px}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-size:12px;padding:5px 12px;border-radius:20px;border:0.5px solid var(--color-border-secondary);cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);transition:all .15s}
+.pill.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap input{width:100%;padding:7px 12px 7px 32px;font-size:13px}
+.search-wrap .ti{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--color-text-secondary)}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.5rem}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.85rem 1rem}
+.metric-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.metric-value{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.metric-sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.table-wrap{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1.5rem}
+table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+thead{background:var(--color-background-secondary)}
+thead th{padding:9px 12px;font-weight:500;color:var(--color-text-secondary);text-align:left;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+thead th:hover{color:var(--color-text-primary)}
+tbody tr{border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--color-background-secondary)}
+tbody tr.selected{background:var(--color-background-info) !important}
+td{padding:8px 12px;color:var(--color-text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank{color:var(--color-text-secondary);font-size:12px;width:36px}
+.name-cell{font-weight:500}
+.score-cell{font-variant-numeric:tabular-nums}
+.diff-pos{color:#1D9E75}
+.diff-neg{color:#D85A30}
+.diff-neu{color:var(--color-text-secondary)}
+.bar-bg{height:6px;background:var(--color-border-tertiary);border-radius:3px;overflow:hidden;min-width:40px}
+.bar-fill{height:100%;border-radius:3px;background:#378ADD;transition:width .3s}
+.badge{font-size:10px;padding:2px 7px;border-radius:10px;display:inline-block}
+.badge-up{background:#E1F5EE;color:#0F6E56}
+.badge-dn{background:#FAECE7;color:#993C1D}
+.badge-eq{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.chart-section{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:1.5rem}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.chart-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.chart-hint{font-size:12px;color:var(--color-text-secondary)}
+.no-sel{text-align:center;font-size:13px;color:var(--color-text-secondary);padding:1.5rem 0}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--color-text-secondary)}
+.legend span{display:flex;align-items:center;gap:4px}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.page-controls{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--color-text-secondary)}
+.page-controls button{font-size:12px;padding:4px 10px}
+.sort-arrow{font-size:10px;margin-left:3px}
+th:nth-child(1){width:38px}
+th:nth-child(2){width:18%}
+th:nth-child(3){width:14%}
+th:nth-child(4){width:13%}
+th:nth-child(5){width:13%}
+th:nth-child(6){width:9%}
+th:nth-child(7){width:18%}
+th:nth-child(8){width:15%}
+</style>
+
+<div class="wrap">
+  <div class="top-bar">
+    <div>
+      <div class="title">Match3D — Player Stats</div>
+      <div class="subtitle">Latest period: 22 Apr → 06 May 2025 &nbsp;·&nbsp; 48 players</div>
+    </div>
+    <div class="controls">
+      <div class="pill active" onclick="setView('all',this)">All players</div>
+      <div class="pill" onclick="setView('gainers',this)">Top gainers</div>
+      <div class="pill" onclick="setView('risers',this)">Most improved</div>
+    </div>
+  </div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="search-wrap">
+    <i class="ti ti-search" aria-hidden="true"></i>
+    <input type="text" placeholder="Search player..." id="search" oninput="renderTable()">
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortBy('rank')">#<span class="sort-arrow" id="sa-rank">↕</span></th>
+          <th onclick="sortBy('name')">Player<span class="sort-arrow" id="sa-name"></span></th>
+          <th onclick="sortBy('score')">Total score<span class="sort-arrow" id="sa-score">↓</span></th>
+          <th onclick="sortBy('last2')">Last 2w<span class="sort-arrow" id="sa-last2"></span></th>
+          <th onclick="sortBy('prev2')">Prev 2w<span class="sort-arrow" id="sa-prev2"></span></th>
+          <th onclick="sortBy('diff')">Diff<span class="sort-arrow" id="sa-diff"></span></th>
+          <th>Progress</th>
+          <th onclick="sortBy('trend')">Trend<span class="sort-arrow" id="sa-trend"></span></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="page-controls" id="pager"></div>
+
+  <div class="chart-section">
+    <div class="chart-header">
+      <div class="chart-title" id="chart-title">Score history — click a player row to view</div>
+      <div class="chart-hint" id="chart-hint"></div>
+    </div>
+    <div id="no-sel" class="no-sel">Select a player in the table above to see their score history</div>
+    <div id="chart-wrap" style="position:relative;width:100%;height:260px;display:none">
+      <canvas id="histChart" role="img" aria-label="Player score history over time"></canvas>
+    </div>
+    <div class="legend" id="chart-legend" style="margin-top:10px;display:none"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const dates = ['24-Sep','08-Oct','22-Oct','05-Nov','19-Nov','03-Dec','17-Dec','31-Dec','14-Jan','28-Jan','11-Feb','25-Feb','11-Mar','25-Mar','08-Apr','22-Apr','06-May'];
+const raw = [
+  ['Ace',8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8617],
+  ['Bohoo',17584,17717,17783,17940,18093,18219,18250,18413,18574,18731,18918,19089,19125,19174,19229,19363,19647],
+  ['Jules',22825,23385,23673,24049,24266,24572,24713,25069,25311,25622,26004,26369,26601,26775,27108,27375,27635],
+  ['Ann',35971,36297,36633,36965,37271,37523,37775,37969,38235,38511,38805,39057,39297,39521,39739,39959,40197],
+  ['ElDee',4300,4300,4300,4300,4300,4372,4545,4681,4872,5153,5327,5434,5582,5770,5943,6122,6345],
+  ['BlueMooner',10800,10800,10800,10800,10800,10800,10800,10800,10800,10800,10800,10833,11200,11435,11649,11811,12025],
+  ['Puzzled',15400,15400,15400,15400,15400,15530,15610,15741,15810,15887,16035,16175,16215,16310,16414,16530,16727],
+  ['Grammy',9600,9600,9689,9868,10027,10194,10380,10550,10735,10895,11133,11302,11565,11791,12012,12218,12410],
+  ['Broughton',19892,20004,20218,20475,20748,21079,21328,21487,21683,21895,22159,22293,22497,22679,22900,23103,23283],
+  ['Wendy',10300,10300,10300,10300,10300,10336,10457,10633,10799,10971,11219,11440,11619,11754,11922,12040,12212],
+  ['Mattch',29272,29396,29576,29816,30024,30222,30378,30672,30846,31056,31214,31394,31580,31682,31810,31988,32138],
+  ['Nicki',14013,14220,14440,14656,14787,14924,15065,15201,15289,15461,15486,15533,15760,15789,15870,15994,16141],
+  ['Gummibere',10081,10131,10185,10282,10393,10447,10486,10571,10613,10706,10782,10895,10961,11041,11281,11365,11511],
+  ['Longnails',7309,7320,7330,7343,7358,7373,7391,7401,7411,7469,7879,8095,8221,8285,8355,8410,8555],
+  ['Cathy',22238,22380,22706,23020,23262,23575,23737,24041,24328,24666,25002,25186,25425,25660,25906,26106,26250],
+  ['Paula',16469,16509,16547,16602,16639,16663,16683,16749,16761,16805,16848,16928,16923,17079,17087,17106,17240],
+  ['Pinks',13143,13235,13417,13633,13807,13921,14025,14115,14231,14383,14476,14580,14581,14655,14756,14850,14969],
+  ['Kerry',14931,15009,15059,15138,15209,15316,15384,15451,15534,15627,15711,15813,15899,15998,16072,16127,16233],
+  ['Salvine',23125,23423,23451,23507,23575,23634,23701,23754,23843,23913,24083,24160,24207,24271,24335,24447,24545],
+  ['Plolly',4046,4098,4248,4397,4464,4585,4694,4694,4905,5051,5078,5180,5203,5230,5240,5295,5385],
+  ['Frank',14112,14215,14341,14422,14627,14786,14853,14921,15015,15134,15279,15501,15801,16013,16080,16171,16247],
+  ['Amber311',8744,8789,8898,8950,9021,9077,9123,9182,9280,9373,9462,9556,9660,9751,9789,9864,9939],
+  ['Ziggy',15650,15650,15650,15650,15706,15939,15990,16167,16335,16513,16710,16933,17035,17408,17561,17634,17705],
+  ['Hammertime',6537,6572,6620,6705,6759,6841,6887,6993,7066,7115,7186,7285,7362,7462,7538,7617,7683],
+  ['Betty',9279,9310,9355,9385,9414,9431,9476,9516,9592,9660,9700,9763,9794,9823,9871,9895,9960],
+  ['Ann327',1850,1943,2052,2120,2199,2278,2354,2435,2500,2610,2672,2744,2813,2873,2938,2988,3053],
+  ['Dly',20976,21096,21292,21540,21685,21831,22085,22215,22361,22533,22812,23041,23086,23106,23202,23282,23343],
+  ['Robbie',10344,10445,10580,10671,10761,10847,10914,11018,11085,11198,11285,11382,11474,11524,11605,11673,11731],
+  ['Hy100',10749,10900,11082,11193,11271,11358,11473,11587,11676,11735,11830,11955,12065,12138,12203,12274,12330],
+  ['Julija',16252,16308,16349,16381,16459,16471,16483,16511,16519,16530,16546,16594,16623,16685,16685,16729,16783],
+  ['Nixie',12113,12131,12188,12221,12299,12374,12415,12443,12490,12555,12728,12852,13073,13100,13194,13221,13273],
+  ['Orchie',12036,12049,12081,12158,12187,12198,12213,12244,12291,12302,12331,12373,12402,12442,12497,12546,12597],
+  ['Pelo',13575,13575,13575,13575,13575,13655,13744,13854,13981,14110,14261,14401,14530,14603,14764,14940,14990],
+  ['Theresa',13889,13931,13995,14040,14055,14068,14081,14105,14125,14145,14170,14207,14223,14272,14309,14344,14394],
+  ['Rapscallion',10773,10849,10975,11222,11285,11495,11473,11645,11681,11741,11773,11852,11888,11909,11979,12006,12044],
+  ['Steffssprouts',11333,11406,11500,11632,11725,11779,11821,11867,11903,11930,11985,12021,12087,12103,12137,12178,12215],
+  ['Fluffy',8564,8610,8682,8726,8774,8830,8866,8922,8965,9030,9050,9096,9124,9172,9200,9250,9286],
+  ['L1da',4347,4372,4396,4429,4453,4485,4507,4545,4567,4603,4643,4689,4730,4755,4796,4820,4854],
+  ['LisaB',12380,12420,12463,12509,12544,12588,12625,12663,12716,12744,12778,12826,12870,12884,12922,12957,12988],
+  ['Musicmaker',null,null,null,null,null,null,null,null,null,null,null,null,null,null,10140,10140,10166],
+  ['Skewbald',4276,4300,4333,4361,4383,4411,4437,4461,4501,4541,4584,4623,4657,4690,4713,4742,4768],
+  ['Millie',6558,6583,6647,6674,6706,6717,6745,6771,6794,6814,6839,6866,6883,6907,6918,6939,6962],
+  ['PaulaWren',12388,12409,12449,12511,12543,12590,12636,12700,12741,12774,12818,12829,12847,12901,12930,13001,13023],
+  ['JcmValley',5677,5686,5708,5724,5742,5748,5756,5766,5772,5781,5795,5825,5840,5856,5869,5888,5907],
+  ['Donnerion',5800,5800,5800,5800,5807,5815,5815,5830,5855,5880,5892,5906,5925,5940,5947,5947,5965],
+  ['JodieLeanne',5570,5618,5710,5739,5764,5801,5826,5850,5889,5936,6005,6010,6035,6067,6101,6201,6210],
+  ['Totorola',7406,7420,7446,7463,7476,7482,7495,7509,7533,7545,7551,7561,7563,7571,7574,7580,7583],
+  ['Bonuk97',null,null,null,null,null,null,null,null,null,null,null,null,null,null,4644,4644,4645],
+];
+
+const COLORS = ['#378ADD','#1D9E75','#D85A30','#BA7517','#7F77DD','#D4537E','#639922','#E24B4A','#0F6E56','#993C1D'];
+
+const players = raw.map((r,i)=>{
+  const name = r[0];
+  const scores = r.slice(1);
+  const validScores = scores.filter(s=>s!=null);
+  const score = scores[16]??0;
+  const last2 = score - (scores[15]??score);
+  const prev2 = (scores[15]??0) - (scores[14]??0);
+  const diff = last2 - prev2;
+  const firstValid = validScores[0]??score;
+  const totalGain = score - firstValid;
+  return {name,scores,score,last2,prev2,diff,totalGain,rank:0};
+});
+
+players.sort((a,b)=>b.score-a.score).forEach((p,i)=>p.rank=i+1);
+const maxScore = players[0].score;
+
+let sortKey='score', sortDir=-1, view='all', page=0, sel=null;
+const PAGE=15;
+
+function setView(v,el){
+  view=v; page=0; sel=null;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('search').value='';
+  renderTable();
+}
+
+function sortBy(k){
+  if(sortKey===k) sortDir*=-1; else {sortKey=k;sortDir=-1;}
+  page=0; renderTable();
+}
+
+function filtered(){
+  const q=document.getElementById('search').value.toLowerCase();
+  let list=[...players];
+  if(view==='gainers') list=list.filter(p=>p.last2>0);
+  if(view==='risers') list=list.filter(p=>p.diff>0);
+  if(q) list=list.filter(p=>p.name.toLowerCase().includes(q));
+  list.sort((a,b)=>{
+    let av,bv;
+    if(sortKey==='name'){av=a.name;bv=b.name;}
+    else if(sortKey==='rank'){av=a.rank;bv=b.rank;}
+    else if(sortKey==='score'){av=a.score;bv=b.score;}
+    else if(sortKey==='last2'){av=a.last2;bv=b.last2;}
+    else if(sortKey==='prev2'){av=a.prev2;bv=b.prev2;}
+    else if(sortKey==='diff'){av=a.diff;bv=b.diff;}
+    else if(sortKey==='trend'){av=a.totalGain;bv=b.totalGain;}
+    if(sortKey==='name') return sortDir*(av<bv?-1:av>bv?1:0);
+    return sortDir*(av-bv);
+  });
+  return list;
+}
+
+function renderMetrics(){
+  const totalLast2 = players.reduce((s,p)=>s+p.last2,0);
+  const totalPrev2 = players.reduce((s,p)=>s+p.prev2,0);
+  const topGainer = [...players].sort((a,b)=>b.last2-a.last2)[0];
+  const topRiser = [...players].sort((a,b)=>b.diff-a.diff)[0];
+  const active = players.filter(p=>p.last2>0).length;
+  document.getElementById('metrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Total points this period</div><div class="metric-value">${totalLast2.toLocaleString()}</div><div class="metric-sub">vs ${totalPrev2.toLocaleString()} prev</div></div>
+    <div class="metric"><div class="metric-label">Top scorer this period</div><div class="metric-value">${topGainer.name}</div><div class="metric-sub">+${topGainer.last2.toLocaleString()} pts</div></div>
+    <div class="metric"><div class="metric-label">Most improved</div><div class="metric-value">${topRiser.name}</div><div class="metric-sub">+${topRiser.diff.toLocaleString()} vs prev</div></div>
+    <div class="metric"><div class="metric-label">Active players</div><div class="metric-value">${active}</div><div class="metric-sub">of ${players.length} total</div></div>
+  `;
+}
+
+function renderTable(){
+  const list=filtered();
+  const total=list.length;
+  const pages=Math.ceil(total/PAGE);
+  if(page>=pages) page=Math.max(0,pages-1);
+  const slice=list.slice(page*PAGE,(page+1)*PAGE);
+
+  ['rank','name','score','last2','prev2','diff','trend'].forEach(k=>{
+    const el=document.getElementById('sa-'+k);
+    if(!el) return;
+    if(sortKey===k) el.textContent=sortDir>0?'↑':'↓';
+    else el.textContent='';
+  });
+
+  const tbody=document.getElementById('tbody');
+  tbody.innerHTML=slice.map(p=>{
+    const pct=Math.round((p.score/maxScore)*100);
+    const dCls=p.diff>0?'diff-pos':p.diff<0?'diff-neg':'diff-neu';
+    const dStr=p.diff>0?'+'+p.diff:p.diff;
+    const badge=p.last2>0?`<span class="badge badge-up">+${p.last2}</span>`:p.last2<0?`<span class="badge badge-dn">${p.last2}</span>`:`<span class="badge badge-eq">0</span>`;
+    const isSelected=sel&&sel.name===p.name?'selected':'';
+    return `<tr onclick="selectPlayer('${p.name}')" class="${isSelected}">
+      <td class="rank">${p.rank}</td>
+      <td class="name-cell">${p.name}</td>
+      <td class="score-cell">${p.score.toLocaleString()}</td>
+      <td>${badge}</td>
+      <td style="color:var(--color-text-secondary)">${p.prev2}</td>
+      <td class="${dCls}">${dStr}</td>
+      <td><div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></td>
+      <td style="color:var(--color-text-secondary);font-size:12px">+${p.totalGain.toLocaleString()} total</td>
+    </tr>`;
+  }).join('');
+
+  const pager=document.getElementById('pager');
+  if(pages>1){
+    pager.innerHTML=`<button onclick="changePage(-1)" ${page===0?'disabled':''}>← Prev</button>
+      <span>${page+1} / ${pages}</span>
+      <button onclick="changePage(1)" ${page>=pages-1?'disabled':''}>Next →</button>
+      <span style="margin-left:8px">${total} players</span>`;
+  } else {
+    pager.innerHTML=total!==players.length?`<span>${total} players</span>`:'';
+  }
+}
+
+function changePage(d){page+=d;renderTable();}
+
+let chart=null;
+function selectPlayer(name){
+  sel=players.find(p=>p.name===name);
+  renderTable();
+  renderChart();
+}
+
+function renderChart(){
+  if(!sel){return;}
+  const wrap=document.getElementById('chart-wrap');
+  const nosel=document.getElementById('no-sel');
+  wrap.style.display='block';
+  nosel.style.display='none';
+  document.getElementById('chart-title').textContent=`${sel.name} — score history`;
+  document.getElementById('chart-hint').textContent=`Total gain: +${sel.totalGain.toLocaleString()} pts`;
+
+  const validDates=[];
+  const validScores=[];
+  sel.scores.forEach((s,i)=>{if(s!=null){validDates.push(dates[i]);validScores.push(s);}});
+
+  if(chart) chart.destroy();
+  const BLUE='#378ADD';
+  chart=new Chart(document.getElementById('histChart'),{
+    type:'line',
+    data:{
+      labels:validDates,
+      datasets:[{
+        label:sel.name,
+        data:validScores,
+        borderColor:BLUE,
+        backgroundColor:BLUE+'22',
+        borderWidth:2,
+        pointRadius:3,
+        pointBackgroundColor:BLUE,
+        fill:true,
+        tension:0.3
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y.toLocaleString()} pts`}}},
+      scales:{
+        x:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{font:{size:11},maxRotation:45}},
+        y:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{font:{size:11},callback:v=>v.toLocaleString()}}
+      }
+    }
+  });
+
+  const leg=document.getElementById('chart-legend');
+  leg.style.display='flex';
+  leg.innerHTML=`<span><span class="leg-dot" style="background:${BLUE}"></span>${sel.name}: ${sel.score.toLocaleString()} pts (last 2w: +${sel.last2})</span>`;
+}
+
+renderMetrics();
+renderTable();
+</script>
