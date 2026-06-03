@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match3D Team Stats — 3 Jun 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a22;
+    --surface2: #1e2430;
+    --border: #2a3142;
+    --orange: #f97316;
+    --orange-dim: rgba(249,115,22,0.15);
+    --orange-glow: rgba(249,115,22,0.35);
+    --amber: #fbbf24;
+    --green: #34d399;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --text: #e8eaf0;
+    --text-dim: #8892a4;
+    --text-faint: #4a5568;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0d0f14 0%, #1a1f2e 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, var(--orange-glow) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header-inner { max-width: 1100px; margin: 0 auto; position: relative; }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .team-name { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--orange); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--text); line-height: 1.1; }
+  .period-badge { background: var(--orange-dim); border: 1px solid var(--orange); color: var(--orange); font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 20px; white-space: nowrap; margin-top: 4px; }
+
+  /* HERO STATS */
+  .hero-stats { max-width: 1100px; margin: 0 auto; padding: 20px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+    position: relative; overflow: hidden;
+  }
+  .stat-card.highlight { border-color: var(--orange); }
+  .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--border); }
+  .stat-card.highlight::after { background: var(--orange); }
+  .stat-label { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); }
+  .stat-value.orange { color: var(--orange); }
+  .stat-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .stat-sub .up { color: var(--green); }
+  .stat-sub .down { color: var(--red); }
+  .regroup-note { font-size: 10px; color: var(--amber); margin-top: 6px; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); border-radius: 4px; padding: 4px 8px; }
+
+  /* MAIN LAYOUT */
+  .main { max-width: 1100px; margin: 0 auto; padding: 0 24px 40px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
+    padding: 8px 18px; border-radius: 6px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab:hover { border-color: var(--orange); color: var(--orange); }
+  .tab.active { background: var(--orange); border-color: var(--orange); color: #000; }
+
+  /* SEARCH */
+  .search-bar {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px;
+    padding: 11px 16px; border-radius: 8px; margin-bottom: 16px;
+    outline: none; transition: border-color 0.15s;
+  }
+  .search-bar:focus { border-color: var(--orange); }
+  .search-bar::placeholder { color: var(--text-faint); }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: var(--surface2); }
+  th {
+    padding: 12px 14px; text-align: left; font-family: 'Syne', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-dim);
+    text-transform: uppercase; cursor: pointer; user-select: none;
+    white-space: nowrap; border-bottom: 1px solid var(--border);
+    transition: color 0.15s;
+  }
+  th:hover { color: var(--orange); }
+  th.sorted { color: var(--orange); }
+  td { padding: 11px 14px; border-bottom: 1px solid rgba(42,49,66,0.5); white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tr.player-row { cursor: pointer; transition: background 0.1s; }
+  tr.player-row:hover { background: rgba(249,115,22,0.05); }
+  tr.player-row.selected { background: rgba(249,115,22,0.1); }
+  .rank-badge {
+    display: inline-block; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--surface2); color: var(--text-dim); font-size: 10px;
+    text-align: center; line-height: 22px; font-family: 'Syne', sans-serif; font-weight: 700;
+  }
+  .rank-badge.gold { background: rgba(251,191,36,0.2); color: var(--amber); }
+  .rank-badge.silver { background: rgba(156,163,175,0.2); color: #9ca3af; }
+  .rank-badge.bronze { background: rgba(180,120,60,0.2); color: #b47c3c; }
+  .player-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; }
+  .diff-pos { color: var(--green); }
+  .diff-neg { color: var(--red); }
+  .diff-zero { color: var(--text-faint); }
+  .level-bar-wrap { width: 80px; display: inline-block; vertical-align: middle; background: var(--surface2); border-radius: 3px; height: 5px; }
+  .level-bar { height: 5px; border-radius: 3px; background: var(--orange); transition: width 0.4s; }
+
+  /* TEAM PROGRESS CHART */
+  .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; padding-top: 8px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+  canvas { width: 100% !important; }
+
+  /* PLAYER DRILL-DOWN */
+  .drill-card {
+    background: var(--surface); border: 1px solid var(--orange);
+    border-radius: 10px; padding: 20px; margin-bottom: 20px;
+    display: none;
+  }
+  .drill-card.open { display: block; }
+  .drill-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .drill-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--orange); }
+  .drill-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+  .drill-stat { font-size: 12px; color: var(--text-dim); }
+  .drill-stat span { color: var(--text); font-weight: 500; }
+  .close-btn {
+    background: none; border: 1px solid var(--border); color: var(--text-dim);
+    font-size: 18px; width: 30px; height: 30px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; font-family: sans-serif; line-height: 1;
+  }
+  .close-btn:hover { border-color: var(--red); color: var(--red); }
+  .milestone-pill { display: inline-block; background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.4); color: var(--amber); font-size: 10px; padding: 3px 10px; border-radius: 12px; margin-left: 8px; }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 20px; font-size: 11px; color: var(--text-faint); border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div>
+        <div class="team-name">Match3D · Pairfectionists</div>
+        <div class="page-title">Team Stats Dashboard</div>
+      </div>
+      <div class="period-badge">Period ending 3 Jun 2026</div>
+    </div>
+  </div>
+</div>
+
+<div class="hero-stats">
+  <div class="stat-card highlight">
+    <div class="stat-label">This Period</div>
+    <div class="stat-value orange">3,755</div>
+    <div class="stat-sub"><span class="down">▼ 687 vs prev period</span></div>
+    <div class="regroup-note">⚡ Lower due to easier competition post-regroup</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Previous Period</div>
+    <div class="stat-value">4,442</div>
+    <div class="stat-sub">20 May 2026</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Team Total Levels</div>
+    <div class="stat-value">664,126</div>
+    <div class="stat-sub">All-time combined</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Active Players</div>
+    <div class="stat-value">49</div>
+    <div class="stat-sub">in roster</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- TEAM PROGRESS CHART -->
+  <div class="section-title">Team Progress Over Time</div>
+  <div class="chart-card">
+    <canvas id="teamChart" height="200"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="section-title" style="margin-bottom:10px;">Levels Gained Per Period</div>
+    <canvas id="gainChart" height="160"></canvas>
+  </div>
+
+  <!-- PLAYER TABLE -->
+  <div class="section-title">Player Leaderboard</div>
+  <div class="tabs">
+    <button class="tab active" onclick="setView('all', this)">All Players</button>
+    <button class="tab" onclick="setView('top', this)">Top Gainers</button>
+    <button class="tab" onclick="setView('improved', this)">Most Improved</button>
+  </div>
+  <input class="search-bar" id="searchBox" placeholder="Search player..." oninput="renderTable()">
+
+  <div id="drillCard" class="drill-card">
+    <div class="drill-header">
+      <div>
+        <span class="drill-name" id="drillName"></span>
+        <span id="drillMilestone" class="milestone-pill" style="display:none"></span>
+      </div>
+      <button class="close-btn" onclick="closeDrill()">×</button>
+    </div>
+    <div class="drill-stats" id="drillStats"></div>
+    <div style="margin-top:16px;">
+      <canvas id="playerChart" height="180"></canvas>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="playerTable">
+      <thead>
+        <tr>
+          <th onclick="sortBy('rank')" id="th-rank">RNK</th>
+          <th onclick="sortBy('name')" id="th-name">Player</th>
+          <th onclick="sortBy('total')" id="th-total">Total ▾</th>
+          <th onclick="sortBy('last2')" id="th-last2">Last 2 Wks</th>
+          <th onclick="sortBy('prev2')" id="th-prev2">Prev 2 Wks</th>
+          <th onclick="sortBy('diff')" id="th-diff">Improvement</th>
+          <th onclick="sortBy('gain2026')" id="th-gain2026">2026 Gain</th>
+          <th>Progress</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">Match3D · Pairfectionists · Stats generated 3 Jun 2026</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const RAW = {"players":[{"name":"Ann","last2":216,"prev2":224,"diff":-8,"total":40637,"gain2026":2402,"history":{"08-Oct":36297,"22-Oct":36633,"05-Nov":36965,"19-Nov":37271,"03-Dec":37523,"17-Dec":37775,"31-Dec":37969,"14-Jan":38235,"28-Jan":38511,"11-Feb":38805,"25-Feb":39057,"11-Mar":39297,"25-Mar":39521,"08-Apr":39739,"22-Apr":39959,"06-May":40197,"20-May":40421,"03-Jun":40637}},{"name":"Mattch","last2":144,"prev2":134,"diff":10,"total":32416,"gain2026":1570,"history":{"08-Oct":29396,"22-Oct":29576,"05-Nov":29816,"19-Nov":30024,"03-Dec":30222,"17-Dec":30378,"31-Dec":30672,"14-Jan":30846,"28-Jan":31056,"11-Feb":31214,"25-Feb":31394,"11-Mar":31580,"25-Mar":31682,"08-Apr":31810,"22-Apr":31988,"06-May":32138,"20-May":32272,"03-Jun":32416}},{"name":"Jules","last2":201,"prev2":380,"diff":-179,"total":28216,"gain2026":2905,"history":{"08-Oct":23385,"22-Oct":23673,"05-Nov":24049,"19-Nov":24266,"03-Dec":24572,"17-Dec":24713,"31-Dec":25069,"14-Jan":25311,"28-Jan":25622,"11-Feb":26004,"25-Feb":26369,"11-Mar":26601,"25-Mar":26775,"08-Apr":27108,"22-Apr":27375,"06-May":27635,"20-May":28015,"03-Jun":28216}},{"name":"Cathy","last2":166,"prev2":210,"diff":-44,"total":26626,"gain2026":2298,"history":{"08-Oct":22380,"22-Oct":22706,"05-Nov":23020,"19-Nov":23262,"03-Dec":23575,"17-Dec":23737,"31-Dec":24041,"14-Jan":24328,"28-Jan":24666,"11-Feb":25002,"25-Feb":25186,"11-Mar":25425,"25-Mar":25660,"08-Apr":25906,"22-Apr":26106,"06-May":26250,"20-May":26460,"03-Jun":26626}},{"name":"Salvine","last2":43,"prev2":34,"diff":9,"total":24622,"gain2026":779,"history":{"08-Oct":23423,"22-Oct":23451,"05-Nov":23507,"19-Nov":23575,"03-Dec":23634,"17-Dec":23701,"31-Dec":23754,"14-Jan":23843,"28-Jan":23913,"11-Feb":24083,"25-Feb":24160,"11-Mar":24207,"25-Mar":24271,"08-Apr":24335,"22-Apr":24447,"06-May":24545,"20-May":24579,"03-Jun":24622}},{"name":"Dly","last2":152,"prev2":8,"diff":144,"total":23503,"gain2026":1142,"history":{"08-Oct":21096,"22-Oct":21292,"05-Nov":21540,"19-Nov":21685,"03-Dec":21831,"17-Dec":22085,"31-Dec":22215,"14-Jan":22361,"28-Jan":22533,"11-Feb":22812,"25-Feb":23041,"11-Mar":23086,"25-Mar":23106,"08-Apr":23202,"22-Apr":23282,"06-May":23343,"20-May":23351,"03-Jun":23503}},{"name":"Broughton","last2":-4,"prev2":224,"diff":-228,"total":23503,"gain2026":1820,"history":{"08-Oct":20004,"22-Oct":20218,"05-Nov":20475,"19-Nov":20748,"03-Dec":21079,"17-Dec":21328,"31-Dec":21487,"14-Jan":21683,"28-Jan":21895,"11-Feb":22159,"25-Feb":22293,"11-Mar":22497,"25-Mar":22679,"08-Apr":22900,"22-Apr":23103,"06-May":23283,"20-May":23507,"03-Jun":23503}},{"name":"Bohoo","last2":100,"prev2":166,"diff":-66,"total":19913,"gain2026":1339,"history":{"08-Oct":17717,"22-Oct":17783,"05-Nov":17940,"19-Nov":18093,"03-Dec":18219,"17-Dec":18250,"31-Dec":18413,"14-Jan":18574,"28-Jan":18731,"11-Feb":18918,"25-Feb":19089,"11-Mar":19125,"25-Mar":19174,"08-Apr":19229,"22-Apr":19363,"06-May":19647,"20-May":19813,"03-Jun":19913}},{"name":"Ziggy","last2":38,"prev2":116,"diff":-78,"total":17859,"gain2026":1524,"history":{"08-Oct":15650,"22-Oct":15650,"05-Nov":15650,"19-Nov":15706,"03-Dec":15939,"17-Dec":15990,"31-Dec":16167,"14-Jan":16335,"28-Jan":16513,"11-Feb":16710,"25-Feb":16933,"11-Mar":17035,"25-Mar":17408,"08-Apr":17561,"22-Apr":17634,"06-May":17705,"20-May":17821,"03-Jun":17859}},{"name":"Paula","last2":39,"prev2":87,"diff":-48,"total":17366,"gain2026":605,"history":{"08-Oct":16509,"22-Oct":16547,"05-Nov":16602,"19-Nov":16639,"03-Dec":16663,"17-Dec":16683,"31-Dec":16749,"14-Jan":16761,"28-Jan":16805,"11-Feb":16848,"25-Feb":16928,"11-Mar":16923,"25-Mar":17079,"08-Apr":17087,"22-Apr":17106,"06-May":17240,"20-May":17327,"03-Jun":17366}},{"name":"Julija","last2":11,"prev2":36,"diff":-25,"total":16830,"gain2026":311,"history":{"08-Oct":16308,"22-Oct":16349,"05-Nov":16381,"19-Nov":16459,"03-Dec":16471,"17-Dec":16483,"31-Dec":16511,"14-Jan":16519,"28-Jan":16530,"11-Feb":16546,"25-Feb":16594,"11-Mar":16623,"25-Mar":16685,"08-Apr":16685,"22-Apr":16729,"06-May":16783,"20-May":16819,"03-Jun":16830}},{"name":"Puzzled","last2":134,"prev2":178,"diff":-44,"total":17039,"gain2026":1229,"history":{"08-Oct":15400,"22-Oct":15400,"05-Nov":15400,"19-Nov":15400,"03-Dec":15530,"17-Dec":15610,"31-Dec":15741,"14-Jan":15810,"28-Jan":15887,"11-Feb":16035,"25-Feb":16175,"11-Mar":16215,"25-Mar":16310,"08-Apr":16414,"22-Apr":16530,"06-May":16727,"20-May":16905,"03-Jun":17039}},{"name":"Frank","last2":88,"prev2":165,"diff":-77,"total":16500,"gain2026":1485,"history":{"08-Oct":14215,"22-Oct":14341,"05-Nov":14422,"19-Nov":14627,"03-Dec":14786,"17-Dec":14853,"31-Dec":14921,"14-Jan":15015,"28-Jan":15134,"11-Feb":15279,"25-Feb":15501,"11-Mar":15801,"25-Mar":16013,"08-Apr":16080,"22-Apr":16171,"06-May":16247,"20-May":16412,"03-Jun":16500}},{"name":"Kerry","last2":53,"prev2":73,"diff":-20,"total":16359,"gain2026":825,"history":{"08-Oct":15009,"22-Oct":15059,"05-Nov":15138,"19-Nov":15209,"03-Dec":15316,"17-Dec":15384,"31-Dec":15451,"14-Jan":15534,"28-Jan":15627,"11-Feb":15711,"25-Feb":15813,"11-Mar":15899,"25-Mar":15998,"08-Apr":16072,"22-Apr":16127,"06-May":16233,"20-May":16306,"03-Jun":16359}},{"name":"Nicki","last2":87,"prev2":144,"diff":-57,"total":16372,"gain2026":1083,"history":{"08-Oct":14220,"22-Oct":14440,"05-Nov":14656,"19-Nov":14787,"03-Dec":14924,"17-Dec":15065,"31-Dec":15201,"14-Jan":15289,"28-Jan":15461,"11-Feb":15486,"25-Feb":15533,"11-Mar":15760,"25-Mar":15789,"08-Apr":15870,"22-Apr":15994,"06-May":16141,"20-May":16285,"03-Jun":16372}},{"name":"Pelo","last2":148,"prev2":140,"diff":8,"total":15278,"gain2026":1297,"history":{"08-Oct":13575,"22-Oct":13575,"05-Nov":13575,"19-Nov":13575,"03-Dec":13655,"17-Dec":13744,"31-Dec":13854,"14-Jan":13981,"28-Jan":14110,"11-Feb":14261,"25-Feb":14401,"11-Mar":14530,"25-Mar":14603,"08-Apr":14764,"22-Apr":14940,"06-May":14990,"20-May":15130,"03-Jun":15278}},{"name":"Pinks","last2":90,"prev2":163,"diff":-73,"total":15222,"gain2026":991,"history":{"08-Oct":13235,"22-Oct":13417,"05-Nov":13633,"19-Nov":13807,"03-Dec":13921,"17-Dec":14025,"31-Dec":14115,"14-Jan":14231,"28-Jan":14383,"11-Feb":14476,"25-Feb":14580,"11-Mar":14581,"25-Mar":14655,"08-Apr":14756,"22-Apr":14850,"06-May":14969,"20-May":15132,"03-Jun":15222}},{"name":"Theresa","last2":8,"prev2":54,"diff":-46,"total":14456,"gain2026":331,"history":{"08-Oct":13931,"22-Oct":13995,"05-Nov":14040,"19-Nov":14055,"03-Dec":14068,"17-Dec":14081,"31-Dec":14105,"14-Jan":14125,"28-Jan":14145,"11-Feb":14170,"25-Feb":14207,"11-Mar":14223,"25-Mar":14272,"08-Apr":14309,"22-Apr":14344,"06-May":14394,"20-May":14448,"03-Jun":14456}},{"name":"Nixie","last2":91,"prev2":93,"diff":-2,"total":13457,"gain2026":967,"history":{"08-Oct":12131,"22-Oct":12188,"05-Nov":12221,"19-Nov":12299,"03-Dec":12374,"17-Dec":12415,"31-Dec":12443,"14-Jan":12490,"28-Jan":12555,"11-Feb":12728,"25-Feb":12852,"11-Mar":13073,"25-Mar":13100,"08-Apr":13194,"22-Apr":13221,"06-May":13273,"20-May":13366,"03-Jun":13457}},{"name":"PaulaWren","last2":11,"prev2":30,"diff":-19,"total":13064,"gain2026":323,"history":{"08-Oct":12409,"22-Oct":12449,"05-Nov":12511,"19-Nov":12543,"03-Dec":12590,"17-Dec":12636,"31-Dec":12700,"14-Jan":12741,"28-Jan":12774,"11-Feb":12818,"25-Feb":12829,"11-Mar":12847,"25-Mar":12901,"08-Apr":12930,"22-Apr":13001,"06-May":13023,"20-May":13053,"03-Jun":13064}},{"name":"LisaB","last2":28,"prev2":34,"diff":-6,"total":13050,"gain2026":334,"history":{"08-Oct":12420,"22-Oct":12463,"05-Nov":12509,"19-Nov":12544,"03-Dec":12588,"17-Dec":12625,"31-Dec":12663,"14-Jan":12716,"28-Jan":12744,"11-Feb":12778,"25-Feb":12826,"11-Mar":12870,"25-Mar":12884,"08-Apr":12922,"22-Apr":12957,"06-May":12988,"20-May":13022,"03-Jun":13050}},{"name":"Orchie","last2":165,"prev2":59,"diff":106,"total":12821,"gain2026":530,"history":{"08-Oct":12049,"22-Oct":12081,"05-Nov":12158,"19-Nov":12187,"03-Dec":12198,"17-Dec":12213,"31-Dec":12244,"14-Jan":12291,"28-Jan":12302,"11-Feb":12331,"25-Feb":12373,"11-Mar":12402,"25-Mar":12442,"08-Apr":12497,"22-Apr":12546,"06-May":12597,"20-May":12656,"03-Jun":12821}},{"name":"Grammy","last2":215,"prev2":196,"diff":19,"total":12821,"gain2026":2086,"history":{"08-Oct":9600,"22-Oct":9689,"05-Nov":9868,"19-Nov":10027,"03-Dec":10194,"17-Dec":10380,"31-Dec":10550,"14-Jan":10735,"28-Jan":10895,"11-Feb":11133,"25-Feb":11302,"11-Mar":11565,"25-Mar":11791,"08-Apr":12012,"22-Apr":12218,"06-May":12410,"20-May":12606,"03-Jun":12821}},{"name":"Hy100","last2":83,"prev2":131,"diff":-48,"total":12544,"gain2026":868,"history":{"08-Oct":10900,"22-Oct":11082,"05-Nov":11193,"19-Nov":11271,"03-Dec":11358,"17-Dec":11473,"31-Dec":11587,"14-Jan":11676,"28-Jan":11735,"11-Feb":11830,"25-Feb":11955,"11-Mar":12065,"25-Mar":12138,"08-Apr":12203,"22-Apr":12274,"06-May":12330,"20-May":12461,"03-Jun":12544}},{"name":"Steffssprouts","last2":15,"prev2":26,"diff":-11,"total":12256,"gain2026":353,"history":{"08-Oct":11406,"22-Oct":11500,"05-Nov":11632,"19-Nov":11725,"03-Dec":11779,"17-Dec":11821,"31-Dec":11867,"14-Jan":11903,"28-Jan":11930,"11-Feb":11985,"25-Feb":12021,"11-Mar":12087,"25-Mar":12103,"08-Apr":12137,"22-Apr":12178,"06-May":12215,"20-May":12241,"03-Jun":12256}},{"name":"Wendy","last2":176,"prev2":156,"diff":20,"total":12544,"gain2026":1745,"history":{"08-Oct":10300,"22-Oct":10300,"05-Nov":10300,"19-Nov":10300,"03-Dec":10336,"17-Dec":10457,"31-Dec":10633,"14-Jan":10799,"28-Jan":10971,"11-Feb":11219,"25-Feb":11440,"11-Mar":11619,"25-Mar":11754,"08-Apr":11922,"22-Apr":12040,"06-May":12212,"20-May":12368,"03-Jun":12544}},{"name":"Rapscallion","last2":20,"prev2":21,"diff":-1,"total":12085,"gain2026":404,"history":{"08-Oct":10849,"22-Oct":10975,"05-Nov":11222,"19-Nov":11285,"03-Dec":11495,"17-Dec":11473,"31-Dec":11645,"14-Jan":11681,"28-Jan":11741,"11-Feb":11773,"25-Feb":11852,"11-Mar":11888,"25-Mar":11909,"08-Apr":11979,"22-Apr":12006,"06-May":12044,"20-May":12065,"03-Jun":12085}},{"name":"BlueMooner","last2":196,"prev2":193,"diff":3,"total":12414,"gain2026":1614,"history":{"08-Oct":10800,"22-Oct":10800,"05-Nov":10800,"19-Nov":10800,"03-Dec":10800,"17-Dec":10800,"31-Dec":10800,"14-Jan":10800,"28-Jan":10800,"11-Feb":10800,"25-Feb":10833,"11-Mar":11200,"25-Mar":11435,"08-Apr":11649,"22-Apr":11811,"06-May":12025,"20-May":12218,"03-Jun":12414}},{"name":"Robbie","last2":60,"prev2":83,"diff":-23,"total":11874,"gain2026":789,"history":{"08-Oct":10445,"22-Oct":10580,"05-Nov":10671,"19-Nov":10761,"03-Dec":10847,"17-Dec":10914,"31-Dec":11018,"14-Jan":11085,"28-Jan":11198,"11-Feb":11285,"25-Feb":11382,"11-Mar":11474,"25-Mar":11524,"08-Apr":11605,"22-Apr":11673,"06-May":11731,"20-May":11814,"03-Jun":11874}},{"name":"Gummibere","last2":65,"prev2":35,"diff":30,"total":11611,"gain2026":998,"history":{"08-Oct":10131,"22-Oct":10185,"05-Nov":10282,"19-Nov":10393,"03-Dec":10447,"17-Dec":10486,"31-Dec":10571,"14-Jan":10613,"28-Jan":10706,"11-Feb":10782,"25-Feb":10895,"11-Mar":10961,"25-Mar":11041,"08-Apr":11281,"22-Apr":11365,"06-May":11511,"20-May":11546,"03-Jun":11611}},{"name":"Musicmaker","last2":50,"prev2":40,"diff":10,"total":10256,"gain2026":0,"history":{"08-Oct":null,"22-Oct":null,"05-Nov":null,"19-Nov":null,"03-Dec":null,"17-Dec":null,"31-Dec":null,"14-Jan":null,"28-Jan":null,"11-Feb":null,"25-Feb":null,"11-Mar":null,"25-Mar":null,"08-Apr":10140,"22-Apr":10140,"06-May":10166,"20-May":10206,"03-Jun":10256}},{"name":"Betty","last2":91,"prev2":34,"diff":57,"total":10085,"gain2026":493,"history":{"08-Oct":9310,"22-Oct":9355,"05-Nov":9385,"19-Nov":9414,"03-Dec":9431,"17-Dec":9476,"31-Dec":9516,"14-Jan":9592,"28-Jan":9660,"11-Feb":9700,"25-Feb":9763,"11-Mar":9794,"25-Mar":9823,"08-Apr":9871,"22-Apr":9895,"06-May":9960,"20-May":9994,"03-Jun":10085}},{"name":"Amber311","last2":-12,"prev2":87,"diff":-99,"total":10014,"gain2026":734,"history":{"08-Oct":8789,"22-Oct":8898,"05-Nov":8950,"19-Nov":9021,"03-Dec":9077,"17-Dec":9123,"31-Dec":9182,"14-Jan":9280,"28-Jan":9373,"11-Feb":9462,"25-Feb":9556,"11-Mar":9660,"25-Mar":9751,"08-Apr":9789,"22-Apr":9864,"06-May":9939,"20-May":10026,"03-Jun":10014}},{"name":"Fluffy","last2":24,"prev2":60,"diff":-36,"total":9370,"gain2026":405,"history":{"08-Oct":8610,"22-Oct":8682,"05-Nov":8726,"19-Nov":8774,"03-Dec":8830,"17-Dec":8866,"31-Dec":8922,"14-Jan":8965,"28-Jan":9030,"11-Feb":9050,"25-Feb":9096,"11-Mar":9124,"25-Mar":9172,"08-Apr":9200,"22-Apr":9250,"06-May":9286,"20-May":9346,"03-Jun":9370}},{"name":"Ace","last2":133,"prev2":345,"diff":-212,"total":9095,"gain2026":855,"history":{"08-Oct":8240,"22-Oct":8240,"05-Nov":8240,"19-Nov":8240,"03-Dec":8240,"17-Dec":8240,"31-Dec":8240,"14-Jan":8240,"28-Jan":8240,"11-Feb":8240,"25-Feb":8240,"11-Mar":8240,"25-Mar":8240,"08-Apr":8240,"22-Apr":8240,"06-May":8617,"20-May":8962,"03-Jun":9095}},{"name":"Longnails","last2":0,"prev2":125,"diff":-125,"total":8680,"gain2026":1269,"history":{"08-Oct":7320,"22-Oct":7330,"05-Nov":7343,"19-Nov":7358,"03-Dec":7373,"17-Dec":7391,"31-Dec":7401,"14-Jan":7411,"28-Jan":7469,"11-Feb":7879,"25-Feb":8095,"11-Mar":8221,"25-Mar":8285,"08-Apr":8355,"22-Apr":8410,"06-May":8555,"20-May":8680,"03-Jun":8680}},{"name":"Hammertime","last2":213,"prev2":-84,"diff":297,"total":7812,"gain2026":746,"history":{"08-Oct":6572,"22-Oct":6620,"05-Nov":6705,"19-Nov":6759,"03-Dec":6841,"17-Dec":6887,"31-Dec":6993,"14-Jan":7066,"28-Jan":7115,"11-Feb":7186,"25-Feb":7285,"11-Mar":7362,"25-Mar":7462,"08-Apr":7538,"22-Apr":7617,"06-May":7683,"20-May":7599,"03-Jun":7812}},{"name":"Totorola","last2":8,"prev2":16,"diff":-8,"total":7607,"gain2026":74,"history":{"08-Oct":7420,"22-Oct":7446,"05-Nov":7463,"19-Nov":7476,"03-Dec":7482,"17-Dec":7495,"31-Dec":7509,"14-Jan":7533,"28-Jan":7545,"11-Feb":7551,"25-Feb":7561,"11-Mar":7563,"25-Mar":7571,"08-Apr":7574,"22-Apr":7580,"06-May":7583,"20-May":7599,"03-Jun":7607}},{"name":"Daisy","last2":100,"prev2":0,"diff":100,"total":7965,"gain2026":0,"history":{"08-Oct":null,"22-Oct":null,"05-Nov":null,"19-Nov":null,"03-Dec":null,"17-Dec":null,"31-Dec":null,"14-Jan":null,"28-Jan":null,"11-Feb":7865,"25-Feb":7865,"11-Mar":7865,"25-Mar":7865,"08-Apr":7865,"22-Apr":7865,"06-May":7865,"20-May":7865,"03-Jun":7965}},{"name":"Millie","last2":11,"prev2":5,"diff":6,"total":6978,"gain2026":184,"history":{"08-Oct":6583,"22-Oct":6647,"05-Nov":6674,"19-Nov":6706,"03-Dec":6717,"17-Dec":6745,"31-Dec":6771,"14-Jan":6794,"28-Jan":6814,"11-Feb":6839,"25-Feb":6866,"11-Mar":6883,"25-Mar":6907,"08-Apr":6918,"22-Apr":6939,"06-May":6962,"20-May":6967,"03-Jun":6978}},{"name":"ElDee","last2":84,"prev2":40,"diff":44,"total":6469,"gain2026":1597,"history":{"08-Oct":4300,"22-Oct":4300,"05-Nov":4300,"19-Nov":4300,"03-Dec":4372,"17-Dec":4545,"31-Dec":4681,"14-Jan":4872,"28-Jan":5153,"11-Feb":5327,"25-Feb":5434,"11-Mar":5582,"25-Mar":5770,"08-Apr":5943,"22-Apr":6122,"06-May":6345,"20-May":6385,"03-Jun":6469}},{"name":"JodieLeanne","last2":4,"prev2":1,"diff":3,"total":6215,"gain2026":326,"history":{"08-Oct":5618,"22-Oct":5710,"05-Nov":5739,"19-Nov":5764,"03-Dec":5801,"17-Dec":5826,"31-Dec":5850,"14-Jan":5889,"28-Jan":5936,"11-Feb":6005,"25-Feb":6010,"11-Mar":6035,"25-Mar":6067,"08-Apr":6101,"22-Apr":6201,"06-May":6210,"20-May":6211,"03-Jun":6215}},{"name":"Donnerion","last2":9,"prev2":5,"diff":4,"total":5979,"gain2026":124,"history":{"08-Oct":5800,"22-Oct":5800,"05-Nov":5800,"19-Nov":5807,"03-Dec":5815,"17-Dec":5815,"31-Dec":5830,"14-Jan":5855,"28-Jan":5880,"11-Feb":5892,"25-Feb":5906,"11-Mar":5925,"25-Mar":5940,"08-Apr":5947,"22-Apr":5947,"06-May":5965,"20-May":5970,"03-Jun":5979}},{"name":"JcmValley","last2":47,"prev2":25,"diff":22,"total":5979,"gain2026":207,"history":{"08-Oct":5686,"22-Oct":5708,"05-Nov":5724,"19-Nov":5742,"03-Dec":5748,"17-Dec":5756,"31-Dec":5766,"14-Jan":5772,"28-Jan":5781,"11-Feb":5795,"25-Feb":5825,"11-Mar":5840,"25-Mar":5856,"08-Apr":5869,"22-Apr":5888,"06-May":5907,"20-May":5932,"03-Jun":5979}},{"name":"Plolly","last2":25,"prev2":39,"diff":-14,"total":5449,"gain2026":544,"history":{"08-Oct":4098,"22-Oct":4248,"05-Nov":4397,"19-Nov":4464,"03-Dec":4585,"17-Dec":4694,"31-Dec":4694,"14-Jan":4905,"28-Jan":5051,"11-Feb":5078,"25-Feb":5180,"11-Mar":5203,"25-Mar":5230,"08-Apr":5240,"22-Apr":5295,"06-May":5385,"20-May":5424,"03-Jun":5449}},{"name":"L1da","last2":33,"prev2":22,"diff":11,"total":4909,"gain2026":342,"history":{"08-Oct":4372,"22-Oct":4396,"05-Nov":4429,"19-Nov":4453,"03-Dec":4485,"17-Dec":4507,"31-Dec":4545,"14-Jan":4567,"28-Jan":4603,"11-Feb":4643,"25-Feb":4689,"11-Mar":4730,"25-Mar":4755,"08-Apr":4796,"22-Apr":4820,"06-May":4854,"20-May":4876,"03-Jun":4909}},{"name":"Skewbald","last2":29,"prev2":19,"diff":10,"total":4816,"gain2026":315,"history":{"08-Oct":4300,"22-Oct":4333,"05-Nov":4361,"19-Nov":4383,"03-Dec":4411,"17-Dec":4437,"31-Dec":4461,"14-Jan":4501,"28-Jan":4541,"11-Feb":4584,"25-Feb":4623,"11-Mar":4657,"25-Mar":4690,"08-Apr":4713,"22-Apr":4742,"06-May":4768,"20-May":4787,"03-Jun":4816}},{"name":"Ann327","last2":67,"prev2":70,"diff":-3,"total":3190,"gain2026":690,"history":{"08-Oct":1943,"22-Oct":2052,"05-Nov":2120,"19-Nov":2199,"03-Dec":2278,"17-Dec":2354,"31-Dec":2435,"14-Jan":2500,"28-Jan":2610,"11-Feb":2672,"25-Feb":2744,"11-Mar":2813,"25-Mar":2873,"08-Apr":2938,"22-Apr":2988,"06-May":3053,"20-May":3123,"03-Jun":3190}}],"dateLabels":["08-Oct","22-Oct","05-Nov","19-Nov","03-Dec","17-Dec","31-Dec","14-Jan","28-Jan","11-Feb","25-Feb","11-Mar","25-Mar","08-Apr","22-Apr","06-May","20-May","03-Jun"],"date2026Labels":["14-Jan","28-Jan","11-Feb","25-Feb","11-Mar","25-Mar","08-Apr","22-Apr","06-May","20-May","03-Jun"],"teamByPeriod":{"08-Oct":574151,"22-Oct":578162,"05-Nov":582532,"19-Nov":586183,"03-Dec":590420,"17-Dec":593735,"31-Dec":597952,"14-Jan":602053,"28-Jan":606674,"11-Feb":619749,"25-Feb":624552,"11-Mar":628956,"25-Mar":632959,"08-Apr":647195,"22-Apr":651141,"06-May":655929,"20-May":660371,"03-Jun":664126},"gainsByPeriod":{"08-Oct":0,"22-Oct":4011,"05-Nov":4370,"19-Nov":3651,"03-Dec":4237,"17-Dec":3315,"31-Dec":4217,"14-Jan":4101,"28-Jan":4621,"11-Feb":5210,"25-Feb":4803,"11-Mar":4404,"25-Mar":4003,"08-Apr":4096,"22-Apr":3946,"06-May":4788,"20-May":4442,"03-Jun":3755},"thisPeriod":3755,"prevPeriod":4442,"teamTotal":664126};
+
+// Filter nulls, clean players
+const players = RAW.players.filter(p => p.name && p.name !== 'NaN');
+const dateLabels = RAW.dateLabels;
+const milestones = {Puzzled: '17,000', Betty: '10,000', Ace: '9,000'};
+const maxTotal = Math.max(...players.map(p => p.total));
+
+// Sort state
+let sortKey = 'total', sortDir = -1, currentView = 'all', playerChart = null;
+
+function fmt(n) { return n.toLocaleString(); }
+function fmtDiff(n) { return (n >= 0 ? '+' : '') + n; }
+
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function sortBy(key) {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = -1; }
+  document.querySelectorAll('th').forEach(t => t.classList.remove('sorted'));
+  const el = document.getElementById('th-' + key);
+  if (el) el.classList.add('sorted');
+  renderTable();
+}
+
+function getFiltered() {
+  let list = [...players];
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  if (q) list = list.filter(p => p.name.toLowerCase().includes(q));
+  if (currentView === 'top') list = list.filter(p => p.last2 > 0);
+  if (currentView === 'improved') list = list.filter(p => p.diff > 0 && p.prev2 > 0);
+  list.sort((a, b) => {
+    if (sortKey === 'name') return sortDir * a.name.localeCompare(b.name);
+    if (sortKey === 'rank') return sortDir * (b.total - a.total);
+    return sortDir * ((a[sortKey] || 0) - (b[sortKey] || 0));
+  });
+  return list;
+}
+
+function renderTable() {
+  const sorted = [...players].sort((a,b) => b.total - a.total);
+  const rankMap = {};
+  sorted.forEach((p,i) => rankMap[p.name] = i+1);
+  const list = getFiltered();
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = list.map(p => {
+    const rank = rankMap[p.name];
+    const badgeClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+    const barPct = Math.round((p.total / maxTotal) * 100);
+    const diffClass = p.diff > 0 ? 'diff-pos' : p.diff < 0 ? 'diff-neg' : 'diff-zero';
+    const lastClass = p.last2 > 0 ? '' : p.last2 < 0 ? 'diff-neg' : 'diff-zero';
+    const ms = milestones[p.name] ? ` ⭐` : '';
+    return `<tr class="player-row" onclick="openDrill('${p.name}')">
+      <td><span class="rank-badge ${badgeClass}">${rank}</span></td>
+      <td><span class="player-name">${p.name}${ms}</span></td>
+      <td>${fmt(p.total)}</td>
+      <td class="${lastClass}">${p.last2 >= 0 ? '+' : ''}${p.last2}</td>
+      <td>${p.prev2 >= 0 ? '+' : ''}${p.prev2}</td>
+      <td class="${diffClass}">${fmtDiff(p.diff)}</td>
+      <td>${p.gain2026 > 0 ? '+'+fmt(p.gain2026) : '—'}</td>
+      <td><div class="level-bar-wrap"><div class="level-bar" style="width:${barPct}%"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+let playerChartInst = null;
+function openDrill(name) {
+  const p = players.find(x => x.name === name);
+  if (!p) return;
+  document.getElementById('drillName').textContent = name;
+  const ms = milestones[name];
+  const pill = document.getElementById('drillMilestone');
+  if (ms) { pill.textContent = '🏆 Crossed ' + ms; pill.style.display = 'inline-block'; }
+  else pill.style.display = 'none';
+
+  const sorted = [...players].sort((a,b) => b.total - a.total);
+  const rank = sorted.findIndex(x => x.name === name) + 1;
+  document.getElementById('drillStats').innerHTML = `
+    <div class="drill-stat">Rank <span>#${rank}</span></div>
+    <div class="drill-stat">Total <span>${fmt(p.total)}</span></div>
+    <div class="drill-stat">This period <span>${p.last2 >= 0 ? '+' : ''}${p.last2}</span></div>
+    <div class="drill-stat">Improvement <span style="color:${p.diff>=0?'var(--green)':'var(--red)'}">${fmtDiff(p.diff)}</span></div>
+    <div class="drill-stat">2026 gain <span>${p.gain2026 > 0 ? '+'+fmt(p.gain2026) : '—'}</span></div>
+  `;
+
+  const labels = dateLabels.filter(d => p.history[d] != null);
+  const vals = labels.map(d => p.history[d]);
+
+  if (playerChartInst) playerChartInst.destroy();
+  const ctx = document.getElementById('playerChart').getContext('2d');
+  playerChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Total Levels',
+        data: vals,
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.08)',
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: '#f97316',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8892a4', font: { family: 'DM Mono', size: 10 } }, grid: { color: '#2a3142' } },
+        y: { ticks: { color: '#8892a4', font: { family: 'DM Mono', size: 10 }, callback: v => fmt(v) }, grid: { color: '#2a3142' } }
+      }
+    }
+  });
+
+  const card = document.getElementById('drillCard');
+  card.classList.add('open');
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.querySelectorAll('tr.player-row').forEach(r => r.classList.remove('selected'));
+  const rows = document.querySelectorAll('tr.player-row');
+  rows.forEach(r => { if (r.querySelector('.player-name')?.textContent.startsWith(name)) r.classList.add('selected'); });
+}
+
+function closeDrill() {
+  document.getElementById('drillCard').classList.remove('open');
+  if (playerChartInst) { playerChartInst.destroy(); playerChartInst = null; }
+  document.querySelectorAll('tr.player-row').forEach(r => r.classList.remove('selected'));
+}
+
+// Team cumulative chart
+function buildTeamChart() {
+  const labels = dateLabels;
+  const vals = labels.map(d => RAW.teamByPeriod[d]);
+  const ctx = document.getElementById('teamChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Team Total Levels',
+        data: vals,
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.06)',
+        borderWidth: 2.5,
+        pointRadius: 3,
+        pointBackgroundColor: '#f97316',
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#8892a4', font: { family: 'DM Mono', size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#8892a4', font: { family: 'DM Mono', size: 10 } }, grid: { color: '#2a3142' } },
+        y: { ticks: { color: '#8892a4', font: { family: 'DM Mono', size: 10 }, callback: v => (v/1000).toFixed(0)+'k' }, grid: { color: '#2a3142' } }
+      }
+    }
+  });
+}
+
+// Gains per period bar chart
+function buildGainChart() {
+  const labels = dateLabels.slice(1);
+  const vals = labels.map(d => RAW.gainsByPeriod[d]);
+  const colors = vals.map(v => v >= 4442 ? 'rgba(52,211,153,0.7)' : v === 3755 ? 'rgba(249,115,22,0.8)' : 'rgba(96,165,250,0.6)');
+  const ctx = document.getElementById('gainChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Levels gained',
+        data: vals,
+        backgroundColor: colors,
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8892a4', font: { family: 'DM Mono', size: 10 } }, grid: { color: '#2a3142' } },
+        y: { ticks: { color: '#8892a4', font: { family: 'DM Mono', size: 10 } }, grid: { color: '#2a3142' } }
+      }
+    }
+  });
+}
+
+buildTeamChart();
+buildGainChart();
+renderTable();
+</script>
+</body>
+</html>
