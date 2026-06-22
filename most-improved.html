@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Momentum & Milestones · Pairfectionists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#15122b; --panel:#211c42; --panel2:#2b2556; --line:#38326b;
+  --gold:#ffce4d; --mint:#45d6c0; --coral:#ff7a92; --violet:#b18cff;
+  --ink:#efeaff; --muted:#9a93c7;
+  --r:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(177,140,255,.18), transparent 60%),
+    radial-gradient(700px 500px at -5% 10%, rgba(69,214,192,.12), transparent 55%),
+    var(--bg);
+  color:var(--ink); font-family:'Nunito Sans',system-ui,sans-serif;
+  line-height:1.5; padding:28px 18px 80px; min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:'Fredoka',sans-serif;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;font-size:12px;color:var(--violet);margin-bottom:6px}
+h1{font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(34px,7vw,56px);
+  line-height:1;letter-spacing:-.01em}
+.sub{color:var(--muted);margin-top:10px;font-size:15px}
+.back{display:inline-block;color:var(--violet);text-decoration:none;font-weight:700;
+  font-family:'Fredoka',sans-serif;margin-bottom:18px;font-size:14px}
+.back:hover{color:var(--mint)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+
+/* hero */
+.hero{margin-top:26px;padding:30px;display:flex;flex-wrap:wrap;gap:28px;align-items:center;
+  background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:24px}
+.hero .big{font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(56px,13vw,104px);
+  line-height:.86;color:var(--gold);letter-spacing:-.02em}
+.hero .biglabel{color:var(--muted);font-size:15px;margin-top:8px;max-width:240px}
+.delta{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:800;
+  font-family:'Fredoka',sans-serif;font-size:15px;padding:5px 12px;border-radius:999px;
+  background:rgba(69,214,192,.14);color:var(--mint)}
+.heromini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:1;min-width:240px}
+.mini{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:14px}
+.mini .n{font-family:'Fredoka',sans-serif;font-weight:700;font-size:26px;line-height:1}
+.mini .l{color:var(--muted);font-size:12px;margin-top:5px;letter-spacing:.02em}
+
+.sectitle{font-family:'Fredoka',sans-serif;font-weight:600;font-size:22px;margin:38px 0 16px;
+  display:flex;align-items:center;gap:10px}
+.sectitle .dot{width:10px;height:10px;border-radius:3px;background:var(--gold)}
+
+/* podium */
+.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:end}
+.pod{border-radius:18px;padding:20px 16px;text-align:center;position:relative;overflow:hidden;
+  border:1px solid var(--line)}
+.pod .rank{font-family:'Fredoka',sans-serif;font-weight:700;font-size:13px;opacity:.7}
+.pod .nm{font-family:'Fredoka',sans-serif;font-weight:600;font-size:20px;margin:8px 0 2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pod .v{font-family:'Fredoka',sans-serif;font-weight:700;font-size:34px;line-height:1}
+.pod .u{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.pod.p1{background:linear-gradient(160deg,rgba(255,206,77,.22),var(--panel2));border-color:rgba(255,206,77,.4);padding-top:32px}
+.pod.p1 .v{color:var(--gold)}
+.pod.p2{background:linear-gradient(160deg,rgba(177,140,255,.16),var(--panel2))}
+.pod.p2 .v{color:var(--violet)}
+.pod.p3{background:linear-gradient(160deg,rgba(69,214,192,.14),var(--panel2))}
+.pod.p3 .v{color:var(--mint)}
+
+/* chart */
+.chartbox{padding:22px}
+.chartwrap{position:relative;height:340px}
+.legendnote{color:var(--muted);font-size:13px;margin-top:12px}
+
+/* table */
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center}
+.search{flex:1;min-width:180px;background:var(--panel);border:1px solid var(--line);color:var(--ink);
+  border-radius:12px;padding:11px 14px;font-size:15px;font-family:inherit}
+.search::placeholder{color:var(--muted)}
+.search:focus{outline:none;border-color:var(--violet)}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-family:'Fredoka',sans-serif;font-weight:600;font-size:12px;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:10px 12px;
+  cursor:pointer;user-select:none;white-space:nowrap}
+thead th:hover{color:var(--ink)}
+thead th .ar{opacity:.4;font-size:10px}
+thead th.act .ar{opacity:1;color:var(--gold)}
+tbody td{padding:12px;border-top:1px solid var(--line);font-size:15px;vertical-align:middle}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+.rk{font-family:'Fredoka',sans-serif;font-weight:700;color:var(--muted);width:38px}
+.rk.top{color:var(--gold)}
+.pname{font-weight:700}
+.tag{font-size:10px;font-weight:800;color:var(--mint);background:rgba(69,214,192,.14);
+  padding:2px 7px;border-radius:999px;margin-left:7px;vertical-align:middle;letter-spacing:.04em}
+.barcell{min-width:120px}
+.bar{height:9px;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--coral));min-width:3px}
+.num{font-family:'Fredoka',sans-serif;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.pos{color:var(--mint)} .neg{color:var(--coral)} .flat{color:var(--muted)}
+
+/* momentum lists */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.movecard{padding:18px}
+.movecard h3{font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.moverow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;
+  border-top:1px solid var(--line);font-size:15px}
+.moverow:first-of-type{border-top:none}
+.moverow .v{font-family:'Fredoka',sans-serif;font-weight:700}
+
+/* milestones */
+.mstones{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.mstone{padding:18px;text-align:center;border-radius:16px;
+  background:linear-gradient(160deg,rgba(255,206,77,.16),var(--panel2));border:1px solid rgba(255,206,77,.32)}
+.mstone .lv{font-family:'Fredoka',sans-serif;font-weight:700;font-size:30px;color:var(--gold);line-height:1}
+.mstone .who{font-family:'Fredoka',sans-serif;font-weight:600;margin-top:8px}
+.mstone .cap{font-size:11px;color:var(--muted);margin-top:3px}
+.foot{text-align:center;color:var(--muted);font-size:13px;margin-top:46px}
+
+@media (max-width:620px){
+  .heromini{grid-template-columns:repeat(3,1fr)}
+  .cols{grid-template-columns:1fr}
+  .hero{padding:22px}
+  thead th.hidesm,tbody td.hidesm{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head><body>
+<div class="wrap">
+  <a class="back" href="index.html">← Pairfectionists stats</a>
+  <div class="eyebrow">Pairfectionists · Fortnightly</div>
+  <h1>Momentum &amp; Milestones</h1>
+  <div class="sub">Who's speeding up and who's eased off — comparing this fortnight's climb to the one before — plus the big round numbers crossed on the way to <b id="d-latest"></b>.</div>
+
+  <div class="hero">
+    <div>
+      <div class="big" id="h-name" style="font-size:clamp(40px,9vw,72px)"></div>
+      <div class="biglabel">picked up the most pace this fortnight</div>
+      <div class="delta" id="h-delta"></div>
+    </div>
+    <div class="heromini">
+      <div class="mini"><div class="n pos" id="h-up"></div><div class="l">climbing faster</div></div>
+      <div class="mini"><div class="n" id="h-same" style="color:var(--muted)"></div><div class="l">holding steady</div></div>
+      <div class="mini"><div class="n" id="h-down" style="color:var(--coral)"></div><div class="l">eased off</div></div>
+    </div>
+  </div>
+
+  <div class="sectitle"><span class="dot"></span>Change of pace</div>
+  <div class="panel chartbox">
+    <div class="chartwrap"><canvas id="mom"></canvas></div>
+    <div class="legendnote">How much faster (mint) or slower (coral) each player climbed versus the previous fortnight. Bigger bars mean a bigger change of pace — not a bigger total.</div>
+  </div>
+
+  <div class="cols">
+    <div class="panel movecard">
+      <h3><span class="dot" style="background:var(--mint)"></span>On the up</h3>
+      <div id="risers"></div>
+    </div>
+    <div class="panel movecard">
+      <h3><span class="dot" style="background:var(--coral)"></span>Eased off</h3>
+      <div id="fallers"></div>
+    </div>
+  </div>
+
+  <div class="sectitle"><span class="dot"></span>Milestones crossed</div>
+  <div class="mstones" id="mstones"></div>
+
+  <div class="foot">Pairfectionists · auto-built from the team workbook · momentum compares the last two fortnights, so a new joiner with no history won't show a change of pace yet</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const D = {"dateCols":["24-Sep","08-Oct","22-Oct","05-Nov","19-Nov","03-Dec","17-Dec","31-Dec","14-Jan","28-Jan","11-Feb","25-Feb","11-Mar","25-Mar","08-Apr","22-Apr","06-May"],"players":[{"name":"Ace","series":[8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8240,8617],"last2":377,"prev2":0,"diff":377,"lifetime":377,"current":8617,"is_new":false},{"name":"Bohoo","series":[17584,17717,17783,17940,18093,18219,18250,18413,18574,18731,18918,19089,19125,19174,19229,19363,19647],"last2":284,"prev2":134,"diff":150,"lifetime":2063,"current":19647,"is_new":false},{"name":"Jules","series":[22825,23385,23673,24049,24266,24572,24713,25069,25311,25622,26004,26369,26601,26775,27108,27375,27635],"last2":260,"prev2":267,"diff":-7,"lifetime":4810,"current":27635,"is_new":false},{"name":"Ann","series":[35971,36297,36633,36965,37271,37523,37775,37969,38235,38511,38805,39057,39297,39521,39739,39959,40197],"last2":238,"prev2":220,"diff":18,"lifetime":4226,"current":40197,"is_new":false},{"name":"ElDee","series":[4300,4300,4300,4300,4300,4372,4545,4681,4872,5153,5327,5434,5582,5770,5943,6122,6345],"last2":223,"prev2":179,"diff":44,"lifetime":2045,"current":6345,"is_new":false},{"name":"BlueMooner","series":[10800,10800,10800,10800,10800,10800,10800,10800,10800,10800,10800,10833,11200,11435,11649,11811,12025],"last2":214,"prev2":162,"diff":52,"lifetime":1225,"current":12025,"is_new":false},{"name":"Puzzled","series":[15400,15400,15400,15400,15400,15530,15610,15741,15810,15887,16035,16175,16215,16310,16414,16530,16727],"last2":197,"prev2":116,"diff":81,"lifetime":1327,"current":16727,"is_new":false},{"name":"Grammy","series":[9600,9600,9689,9868,10027,10194,10380,10550,10735,10895,11133,11302,11565,11791,12012,12218,12410],"last2":192,"prev2":206,"diff":-14,"lifetime":2810,"current":12410,"is_new":false},{"name":"Broughton","series":[19892,20004,20218,20475,20748,21079,21328,21487,21683,21895,22159,22293,22497,22679,22900,23103,23283],"last2":180,"prev2":203,"diff":-23,"lifetime":3391,"current":23283,"is_new":false},{"name":"Wendy","series":[10300,10300,10300,10300,10300,10336,10457,10633,10799,10971,11219,11440,11619,11754,11922,12040,12212],"last2":172,"prev2":118,"diff":54,"lifetime":1912,"current":12212,"is_new":false},{"name":"Mattch","series":[29272,29396,29576,29816,30024,30222,30378,30672,30846,31056,31214,31394,31580,31682,31810,31988,32138],"last2":150,"prev2":178,"diff":-28,"lifetime":2866,"current":32138,"is_new":false},{"name":"Nicki","series":[14013,14220,14440,14656,14787,14924,15065,15201,15289,15461,15486,15533,15760,15789,15870,15994,16141],"last2":147,"prev2":124,"diff":23,"lifetime":2128,"current":16141,"is_new":false},{"name":"Gummibere","series":[10081,10131,10185,10282,10393,10447,10486,10571,10613,10706,10782,10895,10961,11041,11281,11365,11511],"last2":146,"prev2":84,"diff":62,"lifetime":1430,"current":11511,"is_new":false},{"name":"Longnails","series":[7309,7320,7330,7343,7358,7373,7391,7401,7411,7469,7879,8095,8221,8285,8355,8410,8555],"last2":145,"prev2":55,"diff":90,"lifetime":1246,"current":8555,"is_new":false},{"name":"Cathy","series":[22238,22380,22706,23020,23262,23575,23737,24041,24328,24666,25002,25186,25425,25660,25906,26106,26250],"last2":144,"prev2":200,"diff":-56,"lifetime":4012,"current":26250,"is_new":false},{"name":"Paula","series":[16469,16509,16547,16602,16639,16663,16683,16749,16761,16805,16848,16928,16923,17079,17087,17106,17240],"last2":134,"prev2":19,"diff":115,"lifetime":771,"current":17240,"is_new":false},{"name":"Pinks","series":[13143,13235,13417,13633,13807,13921,14025,14115,14231,14383,14476,14580,14581,14655,14756,14850,14969],"last2":119,"prev2":94,"diff":25,"lifetime":1826,"current":14969,"is_new":false},{"name":"Kerry","series":[14931,15009,15059,15138,15209,15316,15384,15451,15534,15627,15711,15813,15899,15998,16072,16127,16233],"last2":106,"prev2":55,"diff":51,"lifetime":1302,"current":16233,"is_new":false},{"name":"Salvine","series":[23125,23423,23451,23507,23575,23634,23701,23754,23843,23913,24083,24160,24207,24271,24335,24447,24545],"last2":98,"prev2":112,"diff":-14,"lifetime":1420,"current":24545,"is_new":false},{"name":"Plolly","series":[4046,4098,4248,4397,4464,4585,4694,4694,4905,5051,5078,5180,5203,5230,5240,5295,5385],"last2":90,"prev2":55,"diff":35,"lifetime":1339,"current":5385,"is_new":false},{"name":"Frank","series":[14112,14215,14341,14422,14627,14786,14853,14921,15015,15134,15279,15501,15801,16013,16080,16171,16247],"last2":76,"prev2":91,"diff":-15,"lifetime":2135,"current":16247,"is_new":false},{"name":"Amber311","series":[8744,8789,8898,8950,9021,9077,9123,9182,9280,9373,9462,9556,9660,9751,9789,9864,9939],"last2":75,"prev2":75,"diff":0,"lifetime":1195,"current":9939,"is_new":false},{"name":"Ziggy","series":[15650,15650,15650,15650,15706,15939,15990,16167,16335,16513,16710,16933,17035,17408,17561,17634,17705],"last2":71,"prev2":73,"diff":-2,"lifetime":2055,"current":17705,"is_new":false},{"name":"Hammertime","series":[6537,6572,6620,6705,6759,6841,6887,6993,7066,7115,7186,7285,7362,7462,7538,7617,7683],"last2":66,"prev2":79,"diff":-13,"lifetime":1146,"current":7683,"is_new":false},{"name":"Betty","series":[9279,9310,9355,9385,9414,9431,9476,9516,9592,9660,9700,9763,9794,9823,9871,9895,9960],"last2":65,"prev2":24,"diff":41,"lifetime":681,"current":9960,"is_new":false},{"name":"Ann327","series":[1850,1943,2052,2120,2199,2278,2354,2435,2500,2610,2672,2744,2813,2873,2938,2988,3053],"last2":65,"prev2":50,"diff":15,"lifetime":1203,"current":3053,"is_new":false},{"name":"Dly","series":[20976,21096,21292,21540,21685,21831,22085,22215,22361,22533,22812,23041,23086,23106,23202,23282,23343],"last2":61,"prev2":80,"diff":-19,"lifetime":2367,"current":23343,"is_new":false},{"name":"Robbie","series":[10344,10445,10580,10671,10761,10847,10914,11018,11085,11198,11285,11382,11474,11524,11605,11673,11731],"last2":58,"prev2":68,"diff":-10,"lifetime":1387,"current":11731,"is_new":false},{"name":"Hy100","series":[10749,10900,11082,11193,11271,11358,11473,11587,11676,11735,11830,11955,12065,12138,12203,12274,12330],"last2":56,"prev2":71,"diff":-15,"lifetime":1581,"current":12330,"is_new":false},{"name":"Julija","series":[16252,16308,16349,16381,16459,16471,16483,16511,16519,16530,16546,16594,16623,16685,16685,16729,16783],"last2":54,"prev2":44,"diff":10,"lifetime":531,"current":16783,"is_new":false},{"name":"Nixie","series":[12113,12131,12188,12221,12299,12374,12415,12443,12490,12555,12728,12852,13073,13100,13194,13221,13273],"last2":52,"prev2":27,"diff":25,"lifetime":1160,"current":13273,"is_new":false},{"name":"Orchie","series":[12036,12049,12081,12158,12187,12198,12213,12244,12291,12302,12331,12373,12402,12442,12497,12546,12597],"last2":51,"prev2":49,"diff":2,"lifetime":561,"current":12597,"is_new":false},{"name":"Pelo","series":[13575,13575,13575,13575,13575,13655,13744,13854,13981,14110,14261,14401,14530,14603,14764,14940,14990],"last2":50,"prev2":176,"diff":-126,"lifetime":1415,"current":14990,"is_new":false},{"name":"Theresa","series":[13889,13931,13995,14040,14055,14068,14081,14105,14125,14145,14170,14207,14223,14272,14309,14344,14394],"last2":50,"prev2":35,"diff":15,"lifetime":505,"current":14394,"is_new":false},{"name":"Rapscallion","series":[10773,10849,10975,11222,11285,11495,11473,11645,11681,11741,11773,11852,11888,11909,11979,12006,12044],"last2":38,"prev2":27,"diff":11,"lifetime":1271,"current":12044,"is_new":false},{"name":"Steffssprouts","series":[11333,11406,11500,11632,11725,11779,11821,11867,11903,11930,11985,12021,12087,12103,12137,12178,12215],"last2":37,"prev2":41,"diff":-4,"lifetime":882,"current":12215,"is_new":false},{"name":"Fluffy","series":[8564,8610,8682,8726,8774,8830,8866,8922,8965,9030,9050,9096,9124,9172,9200,9250,9286],"last2":36,"prev2":50,"diff":-14,"lifetime":722,"current":9286,"is_new":false},{"name":"L1da","series":[4347,4372,4396,4429,4453,4485,4507,4545,4567,4603,4643,4689,4730,4755,4796,4820,4854],"last2":34,"prev2":24,"diff":10,"lifetime":507,"current":4854,"is_new":false},{"name":"LisaB","series":[12380,12420,12463,12509,12544,12588,12625,12663,12716,12744,12778,12826,12870,12884,12922,12957,12988],"last2":31,"prev2":35,"diff":-4,"lifetime":608,"current":12988,"is_new":false},{"name":"Musicmaker","series":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,10140,10140,10166],"last2":26,"prev2":0,"diff":26,"lifetime":26,"current":10166,"is_new":true},{"name":"Skewbald","series":[4276,4300,4333,4361,4383,4411,4437,4461,4501,4541,4584,4623,4657,4690,4713,4742,4768],"last2":26,"prev2":29,"diff":-3,"lifetime":492,"current":4768,"is_new":false},{"name":"Millie","series":[6558,6583,6647,6674,6706,6717,6745,6771,6794,6814,6839,6866,6883,6907,6918,6939,6962],"last2":23,"prev2":21,"diff":2,"lifetime":404,"current":6962,"is_new":false},{"name":"PaulaWren","series":[12388,12409,12449,12511,12543,12590,12636,12700,12741,12774,12818,12829,12847,12901,12930,13001,13023],"last2":22,"prev2":71,"diff":-49,"lifetime":635,"current":13023,"is_new":false},{"name":"JcmValley","series":[5677,5686,5708,5724,5742,5748,5756,5766,5772,5781,5795,5825,5840,5856,5869,5888,5907],"last2":19,"prev2":19,"diff":0,"lifetime":230,"current":5907,"is_new":false},{"name":"Donnerion","series":[5800,5800,5800,5800,5807,5815,5815,5830,5855,5880,5892,5906,5925,5940,5947,5947,5965],"last2":18,"prev2":0,"diff":18,"lifetime":165,"current":5965,"is_new":false},{"name":"JodieLeanne","series":[5570,5618,5710,5739,5764,5801,5826,5850,5889,5936,6005,6010,6035,6067,6101,6201,6210],"last2":9,"prev2":100,"diff":-91,"lifetime":640,"current":6210,"is_new":false},{"name":"Totorola","series":[7406,7420,7446,7463,7476,7482,7495,7509,7533,7545,7551,7561,7563,7571,7574,7580,7583],"last2":3,"prev2":6,"diff":-3,"lifetime":177,"current":7583,"is_new":false},{"name":"Bonuk97","series":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,4644,4644,4645],"last2":1,"prev2":0,"diff":1,"lifetime":1,"current":4645,"is_new":true}],"milestones":[{"name":"Ann","boundary":40000,"level":40197},{"name":"BlueMooner","boundary":12000,"level":12025},{"name":"Mattch","boundary":32000,"level":32138},{"name":"Nicki","boundary":16000,"level":16141},{"name":"Ann327","boundary":3000,"level":3053}],"fortnightTotal":4789,"prevFortnightTotal":3946,"lifetimeTotal":67208,"activeCount":48,"playerCount":48,"latestDate":"06-May","prevDate":"22-Apr"};
+const fmt = n => n.toLocaleString('en-GB');
+document.getElementById('d-latest').textContent = D.latestDate;
+
+// momentum = diff (last2 - prev2). Only players with a prior baseline (not brand new) for the pace story.
+const withBase = D.players.filter(p=>!p.is_new);
+const byDiff = [...withBase].sort((a,b)=>b.diff-a.diff);
+const topMover = byDiff[0];
+document.getElementById('h-name').textContent = topMover.name;
+const del=document.getElementById('h-delta');
+del.textContent = '▲ +'+fmt(topMover.diff)+' levels faster than last fortnight';
+
+const up = withBase.filter(p=>p.diff>0).length;
+const same = withBase.filter(p=>p.diff===0).length;
+const down = withBase.filter(p=>p.diff<0).length;
+document.getElementById('h-up').textContent = up;
+document.getElementById('h-same').textContent = same;
+document.getElementById('h-down').textContent = down;
+
+// diverging bar: show the 8 biggest risers and 6 biggest fallers
+const risers = byDiff.filter(p=>p.diff>0).slice(0,8);
+const fallers = byDiff.filter(p=>p.diff<0).slice(-6);
+const chartData = [...risers, ...fallers].sort((a,b)=>b.diff-a.diff);
+new Chart(document.getElementById('mom'),{
+  type:'bar',
+  data:{labels:chartData.map(p=>p.name),datasets:[{
+    data:chartData.map(p=>p.diff),
+    backgroundColor:chartData.map(p=>p.diff>=0?'#45d6c0':'#ff7a92'),
+    borderRadius:6,barThickness:'flex',maxBarThickness:26
+  }]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},
+      tooltip:{backgroundColor:'#211c42',borderColor:'#38326b',borderWidth:1,titleColor:'#efeaff',bodyColor:'#cfc8ff',padding:12,
+        callbacks:{label:c=>(c.parsed.x>=0?'+':'')+fmt(c.parsed.x)+' levels vs last fortnight'}}},
+    scales:{x:{ticks:{color:'#9a93c7',callback:v=>(v>0?'+':'')+v},grid:{color:'rgba(56,50,107,.5)'}},
+      y:{ticks:{color:'#efeaff',font:{family:'Fredoka',size:13}},grid:{display:false}}}}
+});
+
+// lists
+function row(p,sign){const s=p.diff>0?'+':'';return `<div class="moverow"><span>${p.name}</span><span class="v ${p.diff>0?'pos':'neg'}">${s}${fmt(p.diff)}</span></div>`;}
+document.getElementById('risers').innerHTML = byDiff.filter(p=>p.diff>0).slice(0,6).map(row).join('') || '<div class="moverow" style="color:var(--muted)">No risers this time.</div>';
+document.getElementById('fallers').innerHTML = byDiff.filter(p=>p.diff<0).slice(-6).reverse().map(row).join('') || '<div class="moverow" style="color:var(--muted)">Nobody eased off — strong fortnight!</div>';
+
+// milestones
+document.getElementById('mstones').innerHTML = D.milestones.map(m=>
+  `<div class="mstone"><div class="lv">${fmt(m.boundary)}</div><div class="who">${m.name}</div><div class="cap">now at ${fmt(m.level)}</div></div>`
+).join('') || '<div style="color:var(--muted)">No 1,000-level boundaries crossed this fortnight.</div>';
+</script>
+</body></html>
